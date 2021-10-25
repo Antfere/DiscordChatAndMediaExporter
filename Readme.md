@@ -3,7 +3,8 @@ This fork combines youtube-dl and taglib-sharp alongside the original media down
 Things which need work:
 1) Refactor + Commenting
 2) Html export support
-3) Inevitable migration from youtube-dl to youtube-dlp, which would require a youtube-dlp c# wrapper, but would effectively outsource most work to youtube-dlp, leaving just the basic structure already present
+3) Add option to have the exported txt/html files write both the url of the attached/embeded media and the actual folder/file path to the media. For offline viewing / better archiving.
+4) Inevitable migration from youtube-dl to youtube-dlp, which would require a youtube-dlp c# wrapper, but would effectively outsource most work to youtube-dlp, leaving just the basic structure already present
 
 Everything below this is from the original readme.
 
