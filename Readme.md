@@ -1,4 +1,4 @@
-This fork combines youtube-dl alongside the original media downloader in an attempt to download and archive as much video, audio, html websites, miscellaneous media, and other things either attached or embedded in discord messages. Only works when exporting with .txt format.
+This fork combines youtube-dl and taglib-sharp alongside the original media downloader in an attempt to download, archive, and thumbnail as much video, audio, html websites, miscellaneous media, and other things either attached or embedded in discord messages. Only works when exporting with .txt format.
 
 Things which need work:
 1) Refactor + Commenting
