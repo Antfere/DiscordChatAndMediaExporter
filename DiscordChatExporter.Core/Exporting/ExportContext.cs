@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -9,6 +10,7 @@ using DiscordChatExporter.Core.Discord;
 using DiscordChatExporter.Core.Discord.Data;
 using DiscordChatExporter.Core.Utils.Extensions;
 using Tyrrrz.Extensions;
+using NYoutubeDL;
 
 namespace DiscordChatExporter.Core.Exporting
 {
@@ -35,6 +37,7 @@ namespace DiscordChatExporter.Core.Exporting
             Channels = channels;
             Roles = roles;
 
+            // "request" queries the gui options? makes sense
             _mediaDownloader = new MediaDownloader(request.OutputMediaDirPath, request.ShouldReuseMedia);
         }
 
@@ -63,20 +66,31 @@ namespace DiscordChatExporter.Core.Exporting
                 .FirstOrDefault();
         }
 
-        public async ValueTask<string> ResolveMediaUrlAsync(string url)
+        public async ValueTask<string> ResolveMediaUrlAsync(string url, string thumbnailUrl = "", bool hasEmbedUrl = false)
         {
+
+            // System.Diagnostics.Debug.WriteLine(url); // Writes one time with txt, does it twice with html. Gets avatar and profile pic with html and dosen't get youtube or vids
+
             if (!Request.ShouldDownloadMedia)
-                return url;
+                return url; // Does nothing if download media option is off?
 
             try
             {
-                var filePath = await _mediaDownloader.DownloadAsync(url);
+                Regex checkIfAttachment = new Regex(@"^https://cdn.discordapp.com/attachments");
+                if (checkIfAttachment.IsMatch(url) == true) { hasEmbedUrl = false; }
+                var filePath = await _mediaDownloader.DownloadAsync(url, thumbnailUrl, hasEmbedUrl);
+
+                // System.Diagnostics.Debug.WriteLine(filePath); // Prints absolute file path to the archive of media. This also downloads youtube thumbnails which is not ideal.
 
                 // We want relative path so that the output files can be copied around without breaking.
                 // Base directory path may be null if the file is stored at the root or relative to working directory.
                 var relativeFilePath = !string.IsNullOrWhiteSpace(Request.OutputBaseDirPath)
                     ? Path.GetRelativePath(Request.OutputBaseDirPath, filePath)
                     : filePath;
+
+                // I guess he is saying if you wanna change your backup folder it won't break because relative. cool
+
+                // System.Diagnostics.Debug.WriteLine(relativeFilePath); // See difference between absolute and relative
 
                 // HACK: for HTML, we need to format the URL properly
                 if (Request.Format is ExportFormat.HtmlDark or ExportFormat.HtmlLight)

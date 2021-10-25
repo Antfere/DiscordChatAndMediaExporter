@@ -15,27 +15,29 @@ namespace DiscordChatExporter.Core.Discord.Data
 
         public string Url { get; }
 
-        public string FileName { get; }
+        public string Proxy_url { get; }
 
-        public string FileExtension => Path.GetExtension(FileName);
+        public string FileName { get; }
 
         public int? Width { get; }
 
         public int? Height { get; }
 
-        public bool IsImage => ImageFileExtensions.Contains(FileExtension);
+        public bool IsImage => ImageFileExtensions.Contains(Path.GetExtension(FileName));
 
-        public bool IsVideo => VideoFileExtensions.Contains(FileExtension);
+        public bool IsVideo => VideoFileExtensions.Contains(Path.GetExtension(FileName));
 
-        public bool IsAudio => AudioFileExtensions.Contains(FileExtension);
+        public bool IsAudio => AudioFileExtensions.Contains(Path.GetExtension(FileName));
 
-        public bool IsSpoiler => FileName.StartsWith("SPOILER_", StringComparison.Ordinal);
+        public bool IsSpoiler =>
+            (IsImage || IsVideo || IsAudio) && FileName.StartsWith("SPOILER_", StringComparison.Ordinal);
 
         public FileSize FileSize { get; }
 
         public Attachment(
             Snowflake id,
             string url,
+            string proxy_url,
             string fileName,
             int? width,
             int? height,
@@ -43,6 +45,7 @@ namespace DiscordChatExporter.Core.Discord.Data
         {
             Id = id;
             Url = url;
+            Proxy_url = proxy_url;
             FileName = fileName;
             Width = width;
             Height = height;
@@ -67,12 +70,13 @@ namespace DiscordChatExporter.Core.Discord.Data
         {
             var id = json.GetProperty("id").GetString().Pipe(Snowflake.Parse);
             var url = json.GetProperty("url").GetString();
+            var proxy_url = json.GetProperty("proxy_url").GetString();
             var width = json.GetPropertyOrNull("width")?.GetInt32();
             var height = json.GetPropertyOrNull("height")?.GetInt32();
             var fileName = json.GetProperty("filename").GetString();
             var fileSize = json.GetProperty("size").GetInt64().Pipe(FileSize.FromBytes);
 
-            return new Attachment(id, url, fileName, width, height, fileSize);
+            return new Attachment(id, url, proxy_url, fileName, width, height, fileSize);
         }
     }
 }

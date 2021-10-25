@@ -32,7 +32,7 @@ namespace DiscordChatExporter.Core.Exporting.Writers
             {
                 buffer
                     .AppendIfNotEmpty(',')
-                    .Append(await Context.ResolveMediaUrlAsync(attachment.Url));
+                    .Append(await Context.ResolveMediaUrlAsync(attachment.Url, "", false));
             }
 
             await _writer.WriteAsync(CsvEncode(buffer.ToString()));

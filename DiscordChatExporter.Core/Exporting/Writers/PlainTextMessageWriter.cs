@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DiscordChatExporter.Core.Discord.Data;
 using DiscordChatExporter.Core.Exporting.Writers.MarkdownVisitors;
 using Tyrrrz.Extensions;
+using NYoutubeDL;
 
 namespace DiscordChatExporter.Core.Exporting.Writers
 {
@@ -42,8 +43,22 @@ namespace DiscordChatExporter.Core.Exporting.Writers
             await _writer.WriteLineAsync("{Attachments}");
 
             foreach (var attachment in attachments)
-                await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(attachment.Url));
+                System.Diagnostics.Debug.WriteLine("url:" + attachment.Url);
+            
+            foreach (var attachment in attachments)
+                System.Diagnostics.Debug.WriteLine("Proxy:" + attachment.Proxy_url);
 
+            foreach (var attachment in attachments)
+                try
+                {
+                    await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(attachment.Url, "", false));
+                }
+                catch (System.Exception e)
+                {
+                    // await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(attachment.Proxy_url, false));
+                    throw e;
+                }
+               
             await _writer.WriteLineAsync();
         }
 
@@ -51,13 +66,23 @@ namespace DiscordChatExporter.Core.Exporting.Writers
         {
             foreach (var embed in embeds)
             {
+
                 await _writer.WriteLineAsync("{Embed}");
 
                 if (!string.IsNullOrWhiteSpace(embed.Author?.Name))
                     await _writer.WriteLineAsync(embed.Author.Name);
 
-                if (!string.IsNullOrWhiteSpace(embed.Url))
-                    await _writer.WriteLineAsync(embed.Url);
+                if (!string.IsNullOrWhiteSpace(embed.Url)){
+                    if (!string.IsNullOrWhiteSpace(embed.Thumbnail?.Url ?? embed.Thumbnail?.ProxyUrl))
+                    {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable CS8604 // Possible null reference argument.
+                        await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(embed.Url, embed.Thumbnail.ProxyUrl ?? embed.Thumbnail.Url, true));
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                    }
+                    await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(embed.Url, "", true));
+                }
 
                 if (!string.IsNullOrWhiteSpace(embed.Title))
                     await _writer.WriteLineAsync(FormatMarkdown(embed.Title));
@@ -74,11 +99,13 @@ namespace DiscordChatExporter.Core.Exporting.Writers
                         await _writer.WriteLineAsync(FormatMarkdown(field.Value));
                 }
 
-                if (!string.IsNullOrWhiteSpace(embed.Thumbnail?.Url))
-                    await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(embed.Thumbnail.ProxyUrl ?? embed.Thumbnail.Url));
+                /*if (!string.IsNullOrWhiteSpace(embed.Thumbnail?.Url)) {
+                    await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(embed.Thumbnail.ProxyUrl ?? embed.Thumbnail.Url, "", false));
+                    System.Diagnostics.Debug.WriteLine("ThumnailURL: " + embed.Thumbnail.ProxyUrl ?? embed.Thumbnail.Url);
+                }*/
 
                 if (!string.IsNullOrWhiteSpace(embed.Image?.Url))
-                    await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(embed.Image.ProxyUrl ?? embed.Image.Url));
+                    await _writer.WriteLineAsync(await Context.ResolveMediaUrlAsync(embed.Image.ProxyUrl ?? embed.Image.Url, "", false));
 
                 if (!string.IsNullOrWhiteSpace(embed.Footer?.Text))
                     await _writer.WriteLineAsync(embed.Footer.Text);
