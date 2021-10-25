@@ -1,3 +1,12 @@
+This fork combines youtube-dl alongside the original media downloader in an attempt to download and archive as much video, audio, html websites, miscellaneous media, and other things either attached or embedded in discord messages. Only works when exporting with .txt format.
+
+Things which need work:
+1) Refactor + Commenting
+2) Html export support
+3) Inevitable migration from youtube-dl to youtube-dlp, which would require a youtube-dlp c# wrapper, but would effectively outsource most work to youtube-dlp, leaving just the basic structure already present
+
+Everything below this is from the original readme.
+
 # DiscordChatExporter
 
 [![Build](https://github.com/Tyrrrz/DiscordChatExporter/workflows/CI/badge.svg?branch=master)](https://github.com/Tyrrrz/DiscordChatExporter/actions)
