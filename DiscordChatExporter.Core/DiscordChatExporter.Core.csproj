@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JsonExtensions" Version="1.2.0" />
+    <PackageReference Include="MiniRazor.CodeGen" Version="2.2.0" />
+    <PackageReference Include="NYoutubeDLP" Version="0.12.0" />
+    <PackageReference Include="Polly" Version="7.2.3" />
+    <PackageReference Include="Superpower" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Exporting\Writers\Html\*.cshtml" IsRazorTemplate="true" />
+  </ItemGroup>
+
+</Project>
