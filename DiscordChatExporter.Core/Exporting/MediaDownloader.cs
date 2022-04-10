@@ -104,7 +104,6 @@ internal partial class MediaDownloader
                 }*/
             };
 
-            // I should add a counter here to see how many times it tends to fail without the for loop trick
             var testSupportedSites = await youtubeDl.GetDownloadInfoAsync(url);
 
             if (testSupportedSites.Title == null) {
